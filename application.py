@@ -1,4 +1,6 @@
-from flask import Flask
+from flask import Flask, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
 # print a nice greeting.
 def say_hello(username = "World"):
@@ -17,14 +19,81 @@ footer_text = '</body>\n</html>'
 # EB looks for an 'application' callable by default.
 application = Flask(__name__)
 
-# add a rule for the index page.
-application.add_url_rule('/', 'index', (lambda: header_text +
-    say_hello() + instructions + footer_text))
+# Configure SQLAlchemy
+application.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:6006/postgres"
+application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# add a rule when the page is accessed with a name appended to the site
-# URL.
-application.add_url_rule('/<username>', 'hello', (lambda username:
-    header_text + say_hello(username) + home_link + footer_text))
+# Initialize SQLAlchemy with the Flask app
+class Base(DeclarativeBase):
+  pass
+
+db = SQLAlchemy(model_class=Base)
+
+db.init_app(application)
+
+# Define a basic model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+# Create all database tables
+with application.app_context():
+    db.create_all()
+
+# Routes
+@application.route('/')
+def index():
+    users = User.query.all()
+
+    # Create HTML for the user list
+    user_list = '<ul>'
+    for user in users:
+        user_list += f'<li>{user.username} - {user.email}</li>'
+    user_list += '</ul>'
+    
+    # Create the complete HTML page
+    html = f'''
+    <html>
+        <head>
+            <title>User Management</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 40px; }}
+                form {{ margin-bottom: 20px; }}
+                input {{ margin: 5px; padding: 5px; }}
+                button {{ padding: 5px 10px; }}
+            </style>
+        </head>
+        <body>
+            <h1>User Management</h1>
+            
+            <form action="/add_user" method="POST">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <button type="submit">Add User</button>
+            </form>
+            
+            <h2>Current Users:</h2>
+            {user_list}
+        </body>
+    </html>
+    '''
+    return html
+
+@application.route('/add_user', methods=['POST'])
+def add_user():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    
+    if username and email:
+        new_user = User(username=username, email=email)
+        db.session.add(new_user)
+        db.session.commit()
+    
+    return redirect(url_for('index'))
 
 # run the app.
 if __name__ == "__main__":
