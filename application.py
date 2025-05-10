@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+import os
 
 # print a nice greeting.
 def say_hello(username = "World"):
@@ -20,15 +21,20 @@ footer_text = '</body>\n</html>'
 application = Flask(__name__)
 
 # Configure SQLAlchemy
-application.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:6006/postgres"
+if 'RDS_HOSTNAME' in os.environ:
+    # prod env
+    application.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{os.environ['RDS_USERNAME']}:{os.environ['RDS_PASSWORD']}@{os.environ['RDS_HOSTNAME']}:{os.environ['RDS_PORT']}/{os.environ['RDS_DB_NAME']}"
+else:
+    # local env
+    application.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost:6006/postgres"
+
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize SQLAlchemy with the Flask app
 class Base(DeclarativeBase):
-  pass
+    pass
 
 db = SQLAlchemy(model_class=Base)
-
 db.init_app(application)
 
 # Define a basic model
@@ -59,16 +65,16 @@ def index():
     html = f'''
     <html>
         <head>
-            <title>User Management</title>
+            <title>Bookbuds</title>
             <style>
-                body {{ font-family: Arial, sans-serif; margin: 40px; }}
+                body {{ font-family: 'Times New Roman'; margin: 40px; }}
                 form {{ margin-bottom: 20px; }}
                 input {{ margin: 5px; padding: 5px; }}
                 button {{ padding: 5px 10px; }}
             </style>
         </head>
         <body>
-            <h1>User Management</h1>
+            <h1>Welcome to Bookbuds</h1>
             
             <form action="/add_user" method="POST">
                 <input type="text" name="username" placeholder="Username" required>
