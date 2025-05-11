@@ -1,0 +1,19 @@
+branch-defaults:
+  main:
+    environment: Bookbuds-env
+environment-defaults:
+  Bookbuds-env:
+    branch: null
+    repository: null
+global:
+  application_name: bookbuds
+  default_ec2_keyname: null
+  default_platform: Python 3.13 running on 64bit Amazon Linux 2023
+  default_region: us-east-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  sc: git
+  workspace_type: Application
