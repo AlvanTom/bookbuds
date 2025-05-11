@@ -26,7 +26,7 @@ if 'RDS_HOSTNAME' in os.environ:
     application.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{os.environ['RDS_USERNAME']}:{os.environ['RDS_PASSWORD']}@{os.environ['RDS_HOSTNAME']}:{os.environ['RDS_PORT']}/{os.environ['RDS_DB_NAME']}"
 else:
     # local env
-    application.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost:6006/postgres"
+    application.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:6006/postgres"
 
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
