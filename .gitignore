@@ -3,3 +3,5 @@
 .elasticbeanstalk/*
 !.elasticbeanstalk/config.yml
 __pycache__
+
+.env
