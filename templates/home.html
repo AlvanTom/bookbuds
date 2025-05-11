@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Club</title>
+    <style>
+        main {
+            display: flex;
+            margin-top: 20dvh;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+        }
+        h1 {
+            padding-bottom: 20px;
+        }
+        .content {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+        .name-section {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Welcome to Book Buds</h1>
+    <section class="content">
+        <form id="joinbookclub">
+            <label for="bookclubid">Bookclub Id:</label><br>
+            <input type="text" id="bookclubid" name="bookclubid" required><br>
+            <label for="name_join">Name:</label><br>
+            <input type="text" id="name_join" name="name" placeholder="John" required><br>
+            <input type="submit" value="Join Bookclub">
+        </form>
+        OR
+        <form id="createbookclub">
+            <label for="bookclubname">Bookclub Name:</label><br>
+            <input type="text" id="bookclubname" name="bookclubname" required><br>
+            <label for="booktitle">Book Title:</label><br>
+            <input type="text" id="booktitle" name="booktitle" required><br>
+            <label for="chapters">Chapters:</label><br>
+            <input type="number" min="0" id="chapters" name="chapters" required><br>
+            <label for="readingpace">Reading Pace:</label><br>
+            <input type="number" min="0" id="readingpace" name="readingpace" required><br>
+            <label for="name_create">Name:</label><br>
+            <input type="text" id="name_create" name="name" placeholder="John" required><br>
+            <input type="submit" value="Create Bookclub">
+        </form> 
+    </section>
+    </main>
+</body>
+<script>
+
+    const join = document.getElementById('joinbookclub')
+    const create = document.getElementById('createbookclub')
+
+    function joinBookclub() {
+        console.log(join)
+        const formData = new FormData(join)
+        const bookclubid = formData.get('bookclubid')
+        const name = formData.get('name_join')
+        for (const pair of formData.entries()) {
+            console.log(pair)
+        }
+        window.location.href = `/${bookclubid}/${name}`
+    }
+
+    async function createBookclub() {
+        const formData = new FormData(create)
+        const name = formData.get('name')
+        try {
+            const response = await fetch("/api/", {
+              method: "POST",
+              // Set the FormData instance as the request body
+              body: formData,
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            const bookclubid = await response.text();
+            console.log(bookclubid);
+        
+            window.location.href = `/${bookclubid}/${name}`
+            } catch (e) {
+            console.error(e);
+            }
+    }
+
+    join.addEventListener('submit', (event) => {
+        event.preventDefault();
+        joinBookclub()
+    })
+
+    create.addEventListener('submit', (event) => {
+        event.preventDefault();
+        createBookclub()
+    })
+
+</script>
+</html>

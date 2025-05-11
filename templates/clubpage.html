@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ bookclub.name }}</title>
+</head>
+<body>
+    <section class="side-menu">
+        <h1> {{bookclub.book_title}} </h1>
+        <p><b>id</b> (Save this somewhere safe!!!): {{bookclub.id}}</p>
+        <h2>Chapter plan</h2>
+        Reading Pace {{bookclub.reading_pace}} chapters per week
+        <ul>
+            {% for chapter in range(1, bookclub.chapters + 1) %}
+                <li>Chapter {{ chapter }}</li>
+            {% endfor %}
+        </ul>
+        <h2>Comments (coming soon)</h2>
+    </section>
+
+</body>

@@ -13,7 +13,7 @@ if 'RDS_HOSTNAME' in os.environ:
     dburi = f"postgresql://{os.environ['RDS_USERNAME']}:{os.environ['RDS_PASSWORD']}@{os.environ['RDS_HOSTNAME']}:{os.environ['RDS_PORT']}/{os.environ['RDS_DB_NAME']}"
 else:
     # local env
-    dburi = "postgresql://postgres:postgres@localhost:6006/postgres"
+    dburi = "postgresql://postgres:password@localhost:6006/postgres"
 
 # instantiate db
 class Base(DeclarativeBase):
